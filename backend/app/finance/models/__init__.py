@@ -6,6 +6,12 @@ from .simulation import (
     ComparisonSummary,
     LoanWithPaymentHistory,
 )
+from .subscription import (
+    UserSubscription,
+    SubscriptionStatus,
+    TrialExtendRequest,
+    SubscriptionResponse,
+)
 
 __all__ = [
     "PaymentRecord",
@@ -16,4 +22,8 @@ __all__ = [
     "ActualMonthEntry",
     "ComparisonSummary",
     "LoanWithPaymentHistory",
+    "UserSubscription",
+    "SubscriptionStatus",
+    "TrialExtendRequest",
+    "SubscriptionResponse",
 ]

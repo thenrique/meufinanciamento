@@ -1,0 +1,88 @@
+# ============================================================================
+# DOCKER BUILD IGNORE FILE - Backend
+# ============================================================================
+# This file tells Docker which files/directories to exclude from the build
+# context. Ignoring unnecessary files speeds up builds and reduces image size.
+# ============================================================================
+
+# Python cache and compiled files (regenerated at runtime)
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments (not needed in container)
+.venv
+venv/
+ENV/
+env/
+.env
+
+# Testing artifacts (not needed in production)
+.pytest_cache
+.tox
+.coverage
+htmlcov/
+.hypothesis/
+
+# IDE and editor files (not needed in container)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git files (not needed in image)
+.git
+.gitignore
+.gitattributes
+
+# Development documentation
+README.md
+docs/
+*.md
+
+# Database and logs (not part of source)
+*.db
+*.sqlite
+*.log
+
+# Mac files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# Docker files (not needed inside container)
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# Node/Web files (separate service, not needed in backend)
+node_modules/
+*.min.js
+*.min.css
+package-lock.json
+
+# Mobile files (separate service)
+.dart_tool/
+build/
+pubspec.lock
+
+# Other
+.env.local
+.env.*.local
+*.tmp

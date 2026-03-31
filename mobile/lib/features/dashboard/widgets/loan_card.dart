@@ -16,9 +16,9 @@ class LoanCard extends StatelessWidget {
   });
 
   final Loan loan;
-  final VoidCallback onSimulate;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onSimulate;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +98,8 @@ class LoanCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   onSelected: (value) {
-                    if (value == 'edit') onEdit();
-                    if (value == 'delete') onDelete();
+                    if (value == 'edit' && onEdit != null) onEdit!();
+                    if (value == 'delete' && onDelete != null) onDelete!();
                   },
                   itemBuilder: (context) => [
                     const PopupMenuItem(

@@ -145,7 +145,7 @@ CREATE POLICY "Users update own subscription"
 
 ## 📝 Configurações Finais ✅
 
-1. ✅ **Payment gateway**: Stripe (futura integração)
+1. ✅ **Payment gateway**: Mercado Pago (futura integração)
 2. ✅ **Preço da assinatura**: R$ 14,90/mês
 3. ✅ **Extensão do trial**: 1x (user pode estender mais 7 dias 1 vez)
 4. ✅ **Reativação**: Sim, user pode reativar após cancelar

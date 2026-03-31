@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/loan_history.dart';
 import '../models/payment_record.dart';
+import '../models/user_subscription.dart';
 import 'constants.dart';
 
 class ApiClient {
@@ -85,6 +86,21 @@ class ApiClient {
 
   Future<void> deletePayment(String loanId, String paymentId) async {
     await _dio.delete('/loans/$loanId/payments/$paymentId');
+  }
+
+  // Subscription endpoints
+  Future<UserSubscription> getSubscription() async {
+    final response = await _dio.get(ApiEndpoints.userSubscription);
+    return UserSubscription.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<UserSubscription> extendTrial() async {
+    final response = await _dio.post(ApiEndpoints.extendTrial);
+    return UserSubscription.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<void> cancelSubscription() async {
+    await _dio.delete(ApiEndpoints.cancelSubscription);
   }
 }
 

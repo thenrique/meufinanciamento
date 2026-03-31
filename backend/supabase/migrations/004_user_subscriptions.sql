@@ -7,7 +7,7 @@ CREATE TABLE public.user_subscriptions (
   started_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   expires_at TIMESTAMP WITH TIME ZONE DEFAULT now() + INTERVAL '7 days',
   trial_extended BOOLEAN DEFAULT false,
-  stripe_customer_id TEXT,
+  mercado_pago_customer_id TEXT,
   cancelled_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()

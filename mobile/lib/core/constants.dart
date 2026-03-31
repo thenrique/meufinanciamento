@@ -33,6 +33,9 @@ class ApiEndpoints {
   static const simulate = '/simulate';
   static const insights = '/advisor/insights';
   static const reportGenerate = '/report/generate';
+  static const userSubscription = '/api/user/subscription';
+  static const extendTrial = '/api/subscription/extend-trial';
+  static const cancelSubscription = '/api/subscription';
 
   static String loanById(String id) => '/loans/$id';
   static String simulateLoan(String loanId) => '/simulate/$loanId';

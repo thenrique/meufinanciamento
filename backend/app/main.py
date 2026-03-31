@@ -7,9 +7,11 @@ from loguru import logger
 from app.config import get_settings
 from app.auth.router import router as auth_router
 from app.finance.router import router as finance_router
+from app.finance.subscription_router import router as subscription_router
 from app.advisor.router import router as advisor_router
 from app.payments.mercadopago import router as payment_router
 from app.pdf.router import router as pdf_router
+from app.middleware.subscription_check import subscription_middleware
 
 
 def _configure_logging() -> None:
@@ -76,6 +78,11 @@ app.add_middleware(
 
 
 @app.middleware("http")
+async def subscription_check_middleware(request: Request, call_next):
+    return await subscription_middleware(request, call_next)
+
+
+@app.middleware("http")
 async def logging_middleware(request: Request, call_next):
     logger.info(f"→ {request.method} {request.url.path}")
     response = await call_next(request)
@@ -97,6 +104,7 @@ async def health_check() -> dict:
 
 app.include_router(auth_router)
 app.include_router(finance_router)
+app.include_router(subscription_router)
 app.include_router(advisor_router)
 app.include_router(payment_router)
 app.include_router(pdf_router)

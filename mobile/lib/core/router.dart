@@ -11,6 +11,7 @@ import '../features/loans/loan_form_screen.dart';
 import '../features/report/report_screen.dart';
 import '../features/report/paywall_screen.dart';
 import '../features/settings/settings_screen.dart';
+import 'subscription_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -19,9 +20,42 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthenticated =
           Supabase.instance.client.auth.currentUser != null;
       final isOnboarding = state.matchedLocation == '/onboarding';
+      final isPaywall = state.matchedLocation == '/paywall';
+      final isSettings = state.matchedLocation == '/settings';
 
+      // Redirect to onboarding if not authenticated (except onboarding itself)
       if (!isAuthenticated && !isOnboarding) return '/onboarding';
+
+      // Redirect to dashboard if authenticated and on onboarding
       if (isAuthenticated && isOnboarding) return '/dashboard';
+
+      // Check subscription for protected routes
+      if (isAuthenticated && !isPaywall && !isSettings) {
+        final subscriptionStatus = ref.watch(subscriptionStatusProvider);
+
+        // Allow all routes until subscription status is loaded
+        if (subscriptionStatus.isLoading) {
+          return null;
+        }
+
+        // Protected routes that require active subscription
+        final protectedRoutes = [
+          '/dashboard',
+          '/loans',
+          '/simulator',
+          '/history',
+          '/report',
+        ];
+
+        final isProtectedRoute = protectedRoutes
+            .any((route) => state.matchedLocation.startsWith(route));
+
+        // If subscription is expired and accessing a protected route, redirect to paywall
+        if (subscriptionStatus.isExpired && isProtectedRoute) {
+          return '/paywall';
+        }
+      }
+
       return null;
     },
     routes: [
