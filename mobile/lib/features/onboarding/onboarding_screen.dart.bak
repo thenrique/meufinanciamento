@@ -1,0 +1,244 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:gap/gap.dart';
+
+import '../../core/constants.dart';
+import '../../core/auth_service.dart';
+import '../../shared/widgets/loading_overlay.dart';
+import '../../shared/widgets/error_toast.dart';
+
+final _isSigningInProvider = StateProvider<bool>((ref) => false);
+
+class OnboardingScreen extends ConsumerWidget {
+  const OnboardingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSigningIn = ref.watch(_isSigningInProvider);
+
+    Future<void> signIn(Future<void> Function() signInFn) async {
+      ref.read(_isSigningInProvider.notifier).state = true;
+      try {
+        await signInFn();
+        if (context.mounted) context.go('/dashboard');
+      } catch (e) {
+        if (context.mounted) {
+          ErrorToast.show(context,
+              'Erro ao entrar. Verifique sua conexão e tente novamente.');
+        }
+      } finally {
+        ref.read(_isSigningInProvider.notifier).state = false;
+      }
+    }
+
+    return LoadingOverlay(
+      isLoading: isSigningIn,
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.white, AppColors.navyLight],
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+              child: Column(
+                children: [
+                  const Spacer(flex: 1),
+
+                  // Logo
+                  Column(
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: AppColors.navy,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 16,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text('🏠',
+                              style: TextStyle(fontSize: 36)),
+                        ),
+                      ),
+                      const Gap(16),
+                      Text(
+                        AppStrings.appName,
+                        style: GoogleFonts.inter(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.navy,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(flex: 1),
+
+                  // Ilustração placeholder
+                  Container(
+                    width: double.infinity,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      color: AppColors.greenLight,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('💰', style: TextStyle(fontSize: 48)),
+                        const Gap(8),
+                        Text(
+                          'Calcule, simule e economize',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: AppColors.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Gap(32),
+
+                  // Headline
+                  Text(
+                    'Seu financiamento está te custando mais do que deveria.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.navy,
+                      height: 1.25,
+                    ),
+                  ),
+                  const Gap(14),
+                  Text(
+                    'Simule, compare e receba alertas no momento certo para economizar.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // Botões
+                  _SocialSignInButton(
+                    emoji: '🌐',
+                    label: 'Entrar com Google',
+                    backgroundColor: AppColors.white,
+                    textColor: AppColors.textPrimary,
+                    borderColor: const Color(0xFFE5E7EB),
+                    onTap: () => signIn(AuthService.instance.signInWithGoogle),
+                  ),
+
+                  if (defaultTargetPlatform == TargetPlatform.iOS) ...[
+                    const Gap(12),
+                    _SocialSignInButton(
+                      emoji: '🍎',
+                      label: 'Entrar com Apple',
+                      backgroundColor: Colors.black,
+                      textColor: AppColors.white,
+                      onTap: () =>
+                          signIn(AuthService.instance.signInWithApple),
+                    ),
+                  ],
+
+                  const Gap(24),
+
+                  Text(
+                    'Ao continuar, você concorda com nossos Termos de Uso e Política de Privacidade.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const Gap(16),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SocialSignInButton extends StatelessWidget {
+  const _SocialSignInButton({
+    required this.emoji,
+    required this.label,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.onTap,
+    this.borderColor,
+  });
+
+  final String emoji;
+  final String label;
+  final Color backgroundColor;
+  final Color textColor;
+  final VoidCallback onTap;
+  final Color? borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(12),
+          border: borderColor != null
+              ? Border.all(color: borderColor!)
+              : null,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 20)),
+            const Gap(10),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

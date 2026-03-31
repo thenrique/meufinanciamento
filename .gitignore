@@ -1,0 +1,25 @@
+# Backend
+/backend/.venv
+/__pycache__
+
+# Mobile
+/mobile/.flutter-plugins
+/build
+
+# Web
+/web/node_modules
+/.next
+/out
+
+# General
+*.swp
+.DS_Store
+*.log
+
+# Environment & Secrets
+.env.local
+secrets.json
+
+# Supabase local files
+/supabase/.branches
+/supabase/seed.sql

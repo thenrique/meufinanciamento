@@ -1,0 +1,139 @@
+# ============================================================================
+# LIGHTWEIGHT DEVELOPMENT DOCKER COMPOSE
+# ============================================================================
+# This configuration is optimized for local development with minimal
+# resource consumption. Each service runs independently for flexibility.
+#
+# STRATEGY:
+# - Backend (FastAPI) runs in Docker with strict resource limits
+# - Web (Next.js) and Mobile (Flutter) run locally for fast iteration
+# - This prevents "PC strain" from multiple heavy services
+# - Total container overhead: ~100-150MB RAM
+#
+# TO USE:
+# 1. Start only backend: docker-compose up -d backend
+# 2. Run web locally:    cd web && npm run dev (port 3000)
+# 3. Run mobile locally: cd mobile && flutter run -d chrome (port 5000)
+#
+# REQUIREMENTS:
+# - Docker & Docker Compose installed
+# - Backend .env file configured
+# - Node.js 18+ for web development
+# - Flutter SDK for mobile development (optional)
+# ============================================================================
+
+version: '3.9'
+
+services:
+  # ============================================================================
+  # BACKEND SERVICE (FastAPI)
+  # ============================================================================
+  # Purpose: REST API server for the application
+  # Resource Limits: 512MB RAM, 1 CPU core (very lightweight)
+  # Logging: Info level only (not debug) to reduce I/O
+  # Health Check: Fast 10-second timeout with 5 retries
+  #
+  # Start with: docker-compose up -d backend
+  # Logs: docker-compose logs -f backend
+  # Shell: docker-compose exec backend bash
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: meufinanciamento-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Use info level logging to reduce I/O and improve performance
+      LOG_LEVEL: info
+    volumes:
+      # Mount only source code, not Python cache or virtual env
+      - ./backend/app:/app/app:ro          # Read-only source code
+      - ./backend/main.py:/app/main.py:ro  # Main entry point
+      - ./backend/.env:/app/.env:ro        # Environment config
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --reload-dirs /app/app
+    # Health check with fast timeout to detect issues quickly
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    # Restart unless explicitly stopped (stable container)
+    restart: unless-stopped
+    # Strict resource limits (512MB RAM, 1 CPU core)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512m
+        reservations:
+          cpus: '0.5'
+          memory: 256m
+    # Network configuration
+    networks:
+      - meufinanciamento
+
+  # ============================================================================
+  # WEB SERVICE DISABLED (Run Locally Instead)
+  # ============================================================================
+  # WHY DISABLED:
+  # - Next.js development needs fast file watching and HMR
+  # - Docker overhead (500MB+ RAM) slows down local development
+  # - Node.js in Docker adds unnecessary latency
+  #
+  # RECOMMENDED LOCAL SETUP:
+  # 1. Open terminal in project root
+  # 2. cd web
+  # 3. npm install (first time only)
+  # 4. npm run dev
+  # 5. Access at: http://localhost:3000
+  #
+  # LOCAL DEVELOPMENT BENEFITS:
+  # - Instant Hot Module Replacement (HMR)
+  # - Native file system performance
+  # - Easier debugging with browser DevTools
+  # - Lower CPU/memory usage than Docker
+  # ============================================================================
+
+  # ============================================================================
+  # MOBILE SERVICE DISABLED (Run Locally Instead)
+  # ============================================================================
+  # WHY DISABLED:
+  # - Flutter web development is not optimized for Docker
+  # - Chrome DevTools integration works better locally
+  # - Hot reload requires direct file system access
+  #
+  # RECOMMENDED LOCAL SETUP:
+  # 1. Open terminal in project root
+  # 2. cd mobile
+  # 3. flutter pub get (first time only)
+  # 4. flutter run -d chrome
+  # 5. Access at: http://localhost:5000
+  #
+  # LOCAL DEVELOPMENT BENEFITS:
+  # - Native Flutter hot reload performance
+  # - Better device integration testing
+  # - Faster Chrome DevTools debugging
+  # ============================================================================
+
+# ============================================================================
+# NETWORK CONFIGURATION
+# ============================================================================
+# Bridge network for inter-service communication
+# Enables backend to be accessible to locally-running web/mobile services
+# at http://localhost:8000 (from host) or http://backend:8000 (from containers)
+# ============================================================================
+networks:
+  meufinanciamiento:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-meufinanciamento
