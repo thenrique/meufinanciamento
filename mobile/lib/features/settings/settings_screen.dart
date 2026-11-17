@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants.dart';
 import '../../core/auth_service.dart';
+import '../../models/subscription_status.dart';
 import '../../shared/widgets/app_button.dart';
 import '../subscription/providers.dart';
 
@@ -285,7 +286,9 @@ class SettingsScreen extends ConsumerWidget {
 
   Future<void> _performCancellation(BuildContext context, WidgetRef ref) async {
     try {
-      await ref.read(subscriptionStatusProvider.notifier).cancelSubscription();
+      // Usar o subscription notifier do provider
+      final notifier = ref.read(subscriptionNotifierProvider.notifier);
+      await notifier.cancelSubscription();
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

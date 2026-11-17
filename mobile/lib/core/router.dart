@@ -78,7 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const SettingsScreen(),
           ),
           GoRoute(
-            path: 'history/:loanId',
+            path: '/history/:loanId',
             name: 'loanHistory',
             builder: (context, state) => LoanHistoryScreen(
               loanId: state.pathParameters['loanId']!,

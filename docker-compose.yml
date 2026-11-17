@@ -59,7 +59,7 @@ services:
       --host 0.0.0.0
       --port 8000
       --reload
-      --reload-dirs /app/app
+      --reload-dir /app/app
     # Health check with fast timeout to detect issues quickly
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
@@ -129,11 +129,7 @@ services:
 # NETWORK CONFIGURATION
 # ============================================================================
 # Bridge network for inter-service communication
-# Enables backend to be accessible to locally-running web/mobile services
-# at http://localhost:8000 (from host) or http://backend:8000 (from containers)
 # ============================================================================
 networks:
-  meufinanciamiento:
+  meufinanciamento:
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: br-meufinanciamento

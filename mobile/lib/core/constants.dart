@@ -7,6 +7,7 @@ class AppColors {
   static const navy = Color(0xFF1E3A5F);
   static const surface = Color(0xFFF8FAFC);
   static const error = Color(0xFFEF4444);
+  static const warning = Color(0xFFF59E0B);
   static const textPrimary = Color(0xFF111827);
   static const textSecondary = Color(0xFF6B7280);
   static const greenLight = Color(0xFFD1FAE5);
@@ -50,11 +51,11 @@ class EnvConfig {
 
   static const supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://your-project.supabase.co',
+    defaultValue: 'https://cpncjeeegxrwbwbdzdwe.supabase.co',
   );
 
   static const supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'your-anon-key',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwbmNqZWVlZ3hyd2J3YmR6ZHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzODU0NDUsImV4cCI6MjA4OTk2MTQ0NX0.mMohf3YsVu_A0ncAzue8jmbOidjGmawkNghaO5RJIeY',
   );
 }

@@ -38,6 +38,8 @@ class SubscriptionStatus {
 
   bool get shouldUpgrade => isExpired || (isTrial && isExpired);
 
+  bool get isTrialActive => isTrial && !isExpired;
+
   String get statusLabel {
     if (isExpired) return 'Expirado';
     if (isTrial) return 'Período de Teste';
